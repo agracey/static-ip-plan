@@ -4,6 +4,7 @@
 # Called by elemental_static_network.service systemd service
 #
 ################
+
 set -x -e
 for file in /etc/rancher/static-ifs/ifcfg-*
 do

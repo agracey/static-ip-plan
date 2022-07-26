@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: only for debugging
+env
+
 if [ -f /etc/systemd/system/elemental-static-network.service ]
 then
 
