@@ -1,0 +1,13 @@
+[Unit]
+Description=elemental_static_network setup
+Wants=network-pre.target
+Before=network-pre.target
+ConditionPathExistsGlob=/etc/rancher/static-ifs/ifcfg-eth*
+[Service]
+User=root
+Group=root
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/root/bin/elemental_static-ifs
+[Install]
+WantedBy=multi-user.target network-online.target

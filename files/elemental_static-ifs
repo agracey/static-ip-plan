@@ -1,0 +1,16 @@
+#!/bin/bash
+################
+#
+# Called by elemental_static_network.service systemd service
+#
+################
+set -x -e
+for file in /etc/rancher/static-ifs/ifcfg-*
+do
+#       make backups of configs
+#       file minus path
+        filename="${file##*/}"
+        cp /etc/sysconfig/network/$filename /etc/sysconfig/network/"$filename.bak"
+#       copy statics into place
+        cp $file /etc/sysconfig/network/$filename
+done
