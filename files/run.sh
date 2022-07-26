@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # TODO: only for debugging
-env
+set -x
 
-if [ -f /etc/systemd/system/elemental-static-network.service ]
+if [ ! -f /etc/systemd/system/elemental-static-network.service ]
 then
 
 cp elemental-static-network.service /etc/systemd/system/elemental-static-network.service
@@ -11,7 +11,7 @@ cp elemental-static-network.service /etc/systemd/system/elemental-static-network
 fi
 
 
-if [ -f /root/bin/elemental_static-ifs ]
+if [ ! -f /root/bin/elemental_static-ifs ]
 then
 
 cp elemental-static-network.service  /root/bin/elemental_static-ifs
