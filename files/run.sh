@@ -16,4 +16,4 @@ cp elemental-static-network.service  /root/bin/elemental_static-ifs
 fi
 
 
-./set-static
+./set-static 
