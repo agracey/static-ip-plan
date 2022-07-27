@@ -9,25 +9,37 @@
 #        eth_if : ethernet interface to assign static IP
 #         nodes : list (string) of nodes and IPs to use in format
 #                 "node1:<IP> node2:<IP> ..."
-#          mask : Network Mask e.g. 24, 26, etc.
+#          mask : Network Mask e.g. 23, 24, etc.
+#	gateway : Default route setting
+#   nameservers : dns server IP(s) - space delimited (max 3)
+#     dnssearch : domain search string
 #       MAXWAIT : limit # of seconds for random wait (race handling)
 #
 ###############
-set -x -e
+debug="true"
+set -x
 
+#static info
 eth_if=eth0
 nodes="node1:192.168.252.8 node2:192.168.252.9 node3:192.168.252.10"
 mask="23"
+gateway="192.168.252.1"
+nameservers="9.9.9.9 8.8.8.8"
+dnssearch="90023.edge.riot.cfahome.com"
+#end static info
+
 MAXWAIT=10
-
-
 rand_wait=$((RANDOM % $MAXWAIT))
-if [ ! -d /etc/rancher/static-ifs ]; then
-        mkdir -p /etc/rancher/static-ifs
-fi
+
+#############
+# functions #
+#############
 
 function testNodes() {
-        echo testing $*
+	if [[ "$debug" == "true" ]]; then
+		set -x
+	fi
+	echo testing $*
         sleep $rand_wait
         arping -q -D -I $eth_if -c 3 ${nodeip}
         rc=$?
@@ -35,8 +47,12 @@ function testNodes() {
         return $rc
 }
 
-function nodeInfo() {
-        if [ $setNodeInfo -eq 1 ]; then
+function setNodeInfo() {
+	if [[ "$debug" == "true" ]]; then
+		set -x
+	fi
+	# for CFA - use store ID for label in elemental-operator register
+        if [ $needUpdate -eq 1 ]; then
                 storeID=`awk -F'[ .]' '/search/{print $2}' /etc/resolv.conf`
                 # where do you want to use this store-unique info?
                 elemental-operator register --label "storeid=$storeID" /oem/registration
@@ -44,26 +60,55 @@ function nodeInfo() {
 }
 
 function setUp() {
+	if [[ "$debug" == "true" ]]; then
+		set -x
+	fi
         if [[ "$claimedNode" == "none" ]]; then
                 echo "No open IPs found!  Aborting!!"
                 exit 1
         fi
         echo "Setting up Node with IP : "$claimedNode"/"$mask
-        cat > /etc/sysconfig/network/ifcfg-$eth_if << EOF
-STARTMODE=auto
-BOOTPROTO='static'
-IPADDR=''
-EOF
+        cat > /etc/sysconfig/network/ifcfg-$eth_if <<-EOF
+	STARTMODE=auto
+	BOOTPROTO='static'
+	IPADDR=''
+	EOF
 
-        sed -i -r "s/^IPADDR=''/IPADDR='$claimedNode\/$mask'/" /etc/sysconfig/network/ifcfg-$eth_if
-        systemctl restart network
-        setNodeInfo=1
-        cp /etc/sysconfig/network/ifcfg-$eth_if /etc/rancher/static-ifs/
+	# set default route
+	echo "default $gateway - $eth_if" > /etc/sysconfig/network/ifroute-$eth_if
+	# insert IP
+	sed -i -r "s/^IPADDR=''/IPADDR='$claimedNode\/$mask'/" /etc/sysconfig/network/ifcfg-$eth_if
+	# configure DNS
+	sed -i "s/NETCONFIG_DNS_STATIC_SERVERS=\"\"/NETCONFIG_DNS_STATIC_SERVERS=\"$nameservers\"/" /etc/sysconfig/network/config
+	sed -i "s/NETCONFIG_DNS_STATIC_SEARCHLIST=\"\"/NETCONFIG_DNS_STATIC_SEARCHLIST=\"$dnssearch\"/" /etc/sysconfig/network/config
+	systemctl restart network
+	# copy configs into immutable location
+        cp /etc/sysconfig/network/ifcfg-$eth_if /etc/rancher/static/ifs/
+	cp /etc/sysconfig/network/ifroute-$eth_if /etc/rancher/static/ifs/
+	cp /etc/resolv.conf /etc/rancher/static/ifs/
+	needUpdate=1
 }
 
+function saveInfo() {
+	# create immutable location
+	if [ ! -d /etc/rancher/static ]; then
+	        mkdir -p /etc/rancher/static/{ifs,saved}
+	fi
+	if [ ! -f /etc/rancher/static/CONFIGURED ]; then
+		cp /etc/sysconfig/network/ifcfg-$eth_if /etc/rancher/static/saved/
+		cp /etc/sysconfig/network/ifroute-$eth_if /etc/rancher/static/saved/
+		cp /etc/resolv.conf /etc/rancher/static/saved/
+		touch /etc/rancher/static/CONFIGURED
+		echo "Network Configuration Saved"
+	fi
+}
 
 #main
+# Call saveInfo function : Save the DHCP configuration for later review/reset/remediation
+saveInfo
+# IP Claim Loop
 claimedNode="none"
+# loop through node list until finding an empty IP - then claim it immediately
 for n in ${nodes}
 do
         node=${n//:*}
@@ -76,14 +121,11 @@ do
                 break
         fi
 done
-
 #
-# Call the network configuration and restart
+# Call setUp function : network configuration and restart
 setUp
-
 #
-# generate store label
-nodeInfo
-
+# Call setNodeInfo function : generate store label via elemental-operator
+setNodeInfo
 #
 echo "Done"
