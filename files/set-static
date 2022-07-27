@@ -20,12 +20,12 @@ debug="true"
 set -x
 
 #static info
-eth_if=eth0
-nodes="node1:192.168.252.8 node2:192.168.252.9 node3:192.168.252.10"
-mask="23"
-gateway="192.168.252.1"
-nameservers="9.9.9.9 8.8.8.8"
-dnssearch="90023.my.domain.search.com"
+#eth_if=eth0
+#nodes="node1:192.168.252.8 node2:192.168.252.9 node3:192.168.252.10"
+#mask="23"
+#gateway="192.168.252.1"
+#nameservers="9.9.9.9 8.8.8.8"
+#dnssearch="90023.my.domain.search.com"
 #end static info
 
 MAXWAIT=10
