@@ -91,6 +91,9 @@ function setUp() {
 
 function saveInfo() {
 	# create immutable location
+	if [[ "$debug" == "true" ]]; then
+		set -x
+	fi
 	if [ ! -d /etc/rancher/static ]; then
 	        mkdir -p /etc/rancher/static/{ifs,saved}
 	fi
