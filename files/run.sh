@@ -18,8 +18,6 @@ cp elemental_static-ifs  /root/bin/elemental_static-ifs
 
 fi
 
-systemctl enable elemental-static-network
-
 ./set-static 
 
 systemctl enable elemental-static-network
