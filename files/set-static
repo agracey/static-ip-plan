@@ -85,6 +85,7 @@ function setUp() {
 	# copy configs into immutable location
         cp /etc/sysconfig/network/ifcfg-$eth_if /etc/rancher/static/ifs/
 	cp /etc/sysconfig/network/ifroute-$eth_if /etc/rancher/static/ifs/
+	cp /etc/sysconfig/network/config /etc/rancher/static/ifs
 	cp /etc/resolv.conf /etc/rancher/static/ifs/
 	needUpdate=1
 }
