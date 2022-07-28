@@ -14,7 +14,7 @@ fi
 if [ ! -f /root/bin/elemental_static-ifs ]
 then
 
-cp elemental-static-network.service  /root/bin/elemental_static-ifs
+cp elemental_static-ifs  /root/bin/elemental_static-ifs
 
 fi
 
