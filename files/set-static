@@ -54,7 +54,21 @@ function setNodeInfo() {
 	# use store ID for label in elemental-operator register
         if [ $needUpdate -eq 1 ]; then
                 storeID=`awk -F'[ .]' '/search/{print $2}' /etc/resolv.conf`
-                # where do you want to use this store-unique info?
+	fi
+	# check for registration host availability - validating network
+	upTarget=`grep url /oem/registration/config.yaml | cut -d ' ' -f6`
+	curl -o /dev/null -s -w "%{http_code}\n" $upTarget
+	rc=$?
+	if [ $rc -ne "200" ]; then
+		# failed curl - revert to DHCP
+		systemctl disable elemental-static-network.service
+		touch /etc/rancher/static/STATIC-FAILED
+		echo "WARNING!! Upstream Network Access Failure - Reverting to DHCP"
+		cp /etc/rancher/static/saved/ifcfg-$eth_if /etc/sysconfig/network/
+		cp /etc/rancher/static/saved/ifroute-$eth_if /etc/sysconfig/network/
+		cp /etc/rancher/static/saved/resolv.conf /etc/
+	else
+		# save registration label for store ID
                 elemental-operator register --label "storeid=$storeID" /oem/registration
         fi
 }
@@ -98,11 +112,11 @@ function saveInfo() {
 	if [ ! -d /etc/rancher/static ]; then
 	        mkdir -p /etc/rancher/static/{ifs,saved}
 	fi
-	if [ ! -f /etc/rancher/static/CONFIGURED ]; then
+	if [ ! -f /etc/rancher/static/SAVED ]; then
 		cp /etc/sysconfig/network/ifcfg-$eth_if /etc/rancher/static/saved/
 		cp /etc/sysconfig/network/ifroute-$eth_if /etc/rancher/static/saved/
 		cp /etc/resolv.conf /etc/rancher/static/saved/
-		touch /etc/rancher/static/CONFIGURED
+		touch /etc/rancher/static/SAVED
 		echo "Network Configuration Saved"
 	fi
 }

@@ -20,4 +20,9 @@ fi
 
 ./set-static 
 
-systemctl enable elemental-static-network
+if [ -f /etc/rancher/static/STATIC-FAILED ]; then
+	systemctl disable elemental-static-network
+else
+	systemctl enable elemental-static-network
+fi
+
