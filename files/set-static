@@ -57,9 +57,9 @@ function setNodeInfo() {
 	fi
 	# check for registration host availability - validating network
 	upTarget=`grep url /oem/registration/config.yaml | cut -d ' ' -f6`
-	curl -o /dev/null -s -w "%{http_code}\n" $upTarget
-	rc=$?
-	if [ $rc -ne "200" ]; then
+	status=`curl -o /dev/null -s -w "%{http_code}\n" $upTarget`
+
+	if [ $status -ne "200" ]; then
 		# failed curl - revert to DHCP
 		systemctl disable elemental-static-network.service
 		touch /etc/rancher/static/STATIC-FAILED
