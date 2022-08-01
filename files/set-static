@@ -28,6 +28,8 @@ set -x
 #dnssearch="90023.my.domain.search.com"
 #end static info
 
+# Random - now with more
+RANDOM=`date +%s%N | tail -c 6`
 MAXWAIT=20
 
 #############
