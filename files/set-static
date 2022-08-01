@@ -42,7 +42,7 @@ function testNodes() {
 	fi
 	echo testing $*
         sleep $rand_wait
-        arping -q -D -I $eth_if -i $ival_wait -c 3 ${nodeip}
+        arping -q -D -I $eth_if -c 3 ${nodeip}
         rc=$?
         echo "result is "$rc
         return $rc
