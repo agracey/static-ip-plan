@@ -28,7 +28,7 @@ set -x
 #dnssearch="90023.my.domain.search.com"
 #end static info
 
-MAXWAIT=10
+MAXWAIT=20
 rand_wait=$((RANDOM % $MAXWAIT))
 
 #############
