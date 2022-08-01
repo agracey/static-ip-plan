@@ -29,18 +29,18 @@ set -x
 #end static info
 
 MAXWAIT=20
-rand_wait=$((RANDOM % $MAXWAIT))
-ival_wait=$((RANDOM % $MAXWAIT))
 
 #############
 # functions #
 #############
 
 function testNodes() {
+	rand_wait=$((RANDOM % $MAXWAIT * 2))
 	if [[ "$debug" == "true" ]]; then
 		set -x
 	fi
 	echo testing $*
+	echo waiting $rand_wait
         sleep $rand_wait
         arping -q -D -I $eth_if -c 3 ${nodeip}
         rc=$?
