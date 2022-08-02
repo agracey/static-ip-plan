@@ -28,7 +28,7 @@ set -x
 #dnssearch="90023.my.domain.search.com"
 #end static info
 
-# Random - now with more
+# adding more entropy to the random function to reduce the possiblity of collisions
 RANDOM=`date +%s%N | tail -c 6`
 MAXWAIT=20
 
@@ -73,6 +73,8 @@ function setNodeInfo() {
 	else
 		# save registration label for store ID
                 elemental-operator register --label "storeid=$storeID" /oem/registration
+		# change above line to this on next image build
+		#elemental-register --label "storeid=$storeID" /oem/registration
         fi
 }
 
