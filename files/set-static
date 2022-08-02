@@ -37,7 +37,9 @@ MAXWAIT=20
 #############
 
 function testNodes() {
+	# defined locally scoped so each call gives a new random number 
 	rand_wait=$((RANDOM % $MAXWAIT * 2))
+
 	if [[ "$debug" == "true" ]]; then
 		set -x
 	fi
