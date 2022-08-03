@@ -5,7 +5,9 @@
 # Called from a plan file - and run.sh
 # see https://github.com/rancher-sandbox/elemental-example-plan
 #
-# variables required:
+# optional variables required:
+# (Can be passed as Environment variables from plan)
+#
 #        eth_if : ethernet interface to assign static IP
 #         nodes : list (string) of nodes and IPs to use in format
 #                 "node1:<IP> node2:<IP> ..."
@@ -74,8 +76,8 @@ function setNodeInfo() {
 		cp /etc/rancher/static/saved/resolv.conf /etc/
 	else
 		# save registration label for store ID
-                elemental-operator register --label "storeid=$storeID" /oem/registration
-		# change above line to this on next image build
+                elemental-operator register --label "storeid=$storeID" --label "staticip=$claimedNode" /oem/registration
+		# change above line to this on next image build - post Aug 2, 2022
 		#elemental-register --label "storeid=$storeID" /oem/registration
         fi
 }

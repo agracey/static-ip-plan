@@ -6,20 +6,23 @@
 #
 ################
 set -x
-# interfaces
-for file in /etc/rancher/static/ifs/ifcfg-*
-do
-#       file minus path
-        filename="${file##*/}"
-#       copy statics into place
-        cp $file /etc/sysconfig/network/$filename
-done
-# routes
-for file in /etc/rancher/static/ifs/ifroute-*
-do
-	filename="${file##*/}"
-	cp $file /etc/sysconfig/network/$filename
-done
-# dns
-cp /etc/rancher/static/ifs/config /etc/sysconfig/network/
-
+if [ -d /etc/rancher/static ]; then
+	# interfaces
+	for file in /etc/rancher/static/ifs/ifcfg-*
+	do
+	#       file minus path
+       		filename="${file##*/}"
+	#       copy statics into place
+        	cp $file /etc/sysconfig/network/$filename
+	done
+	# routes
+	for file in /etc/rancher/static/ifs/ifroute-*
+	do
+		filename="${file##*/}"
+		cp $file /etc/sysconfig/network/$filename
+	done
+	# dns
+	cp /etc/rancher/static/ifs/config /etc/sysconfig/network/
+else
+	./set-static
+fi
