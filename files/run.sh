@@ -18,7 +18,7 @@ cp elemental_static-ifs  /root/bin/elemental_static-ifs
 
 fi
 
-#./set-static 
+cp set-static /root/bin/set-static
 
 if [ -f /etc/rancher/static/STATIC-FAILED ]; then
 	systemctl disable --now --no-block elemental-static-network
