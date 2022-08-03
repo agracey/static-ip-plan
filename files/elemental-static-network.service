@@ -2,7 +2,6 @@
 Description=elemental_static_network setup
 Wants=network-pre.target
 Before=network-pre.target
-ConditionPathExistsGlob=/etc/rancher/static/ifs/ifcfg-eth*
 
 [Service]
 Type=oneshot
