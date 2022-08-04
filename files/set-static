@@ -22,7 +22,7 @@ debug="true"
 set -x
 
 # source file with env vars
-. static.env
+. /root/bin/static.env
 
 # adding more entropy to the random function to reduce the possiblity of collisions
 RANDOM=`date +%s%N | tail -c 6`
