@@ -98,7 +98,8 @@ function setUp() {
 	# configure DNS
 	sed -i "s/NETCONFIG_DNS_STATIC_SERVERS=\"\"/NETCONFIG_DNS_STATIC_SERVERS=\"$nameservers\"/" /etc/sysconfig/network/config
 	sed -i "s/NETCONFIG_DNS_STATIC_SEARCHLIST=\"\"/NETCONFIG_DNS_STATIC_SEARCHLIST=\"$dnssearch\"/" /etc/sysconfig/network/config
-	systemctl restart network
+	#systemctl restart network
+	wicked ifdown $eth_if && wicked ifup $eth_if
 	# copy configs into immutable location
         cp /etc/sysconfig/network/ifcfg-$eth_if /etc/rancher/static/ifs/
 	cp /etc/sysconfig/network/ifroute-$eth_if /etc/rancher/static/ifs/
